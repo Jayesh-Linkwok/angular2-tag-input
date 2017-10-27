@@ -114,6 +114,7 @@ export class TagInputComponent implements ControlValueAccessor, OnDestroy, OnIni
   @Input() autocompleteItems: string[] = [];
   @Input() autocompleteMustMatch: boolean = true;
   @Input() autocompleteSelectFirstItem: boolean = true;
+  @Input() minSearchTermLength: number = 1;
   @Input() pasteSplitPattern: string = ',';
   @Input() placeholder: string = 'Add a tag';
   @Output('addTag') addTag: EventEmitter<string> = new EventEmitter<string>();
@@ -156,15 +157,11 @@ export class TagInputComponent implements ControlValueAccessor, OnDestroy, OnIni
       tagInputField: ''
     });
 
+    this.autocompleteResults = this.autocompleteItems;
+
     this.tagInputSubscription = this.tagInputField.valueChanges
     .do(value => {
-      this.autocompleteResults = this.autocompleteItems.filter(item => {
-        /**
-         * _isTagUnique makes sure to remove items from the autocompelte dropdown if they have
-         * already been added to the model, and allowDuplicates is false
-         */
-        return item.toLowerCase().indexOf(value.toLowerCase()) > -1 && this._isTagUnique(item);
-      });
+      this._updateAutocompleteResultsList(value);
     })
     .subscribe();
   }
@@ -195,6 +192,16 @@ export class TagInputComponent implements ControlValueAccessor, OnDestroy, OnIni
           this._addTags([this.inputValue]);
           event.preventDefault();
         }
+        break;
+
+      case KEYS.downArrow:
+        if (!this.showAutocomplete()) {
+          this.canShowAutoComplete = true;
+        }
+        break;
+
+      case KEYS.esc:
+        this.canShowAutoComplete = false;
         break;
 
       default:
@@ -237,7 +244,7 @@ export class TagInputComponent implements ControlValueAccessor, OnDestroy, OnIni
       this.autocompleteItems &&
       this.autocompleteItems.length > 0 &&
       this.canShowAutoComplete &&
-      this.inputValue.length > 0
+      this.inputValue.length >= this.minSearchTermLength
     );
   }
 
@@ -293,6 +300,7 @@ export class TagInputComponent implements ControlValueAccessor, OnDestroy, OnIni
     if (!this.inputValue.length && this.tagsList.length) {
       if (!isBlank(this.selectedTag)) {
         this._removeTag(this.selectedTag);
+        this._updateAutocompleteResultsList('');
       } else {
         this.selectedTag = this.tagsList.length - 1;
       }
@@ -305,6 +313,16 @@ export class TagInputComponent implements ControlValueAccessor, OnDestroy, OnIni
 
   private _resetInput(): void {
     this.tagInputField.setValue('');
+  }
+
+  private _updateAutocompleteResultsList(searchTerm: string): void {
+    this.autocompleteResults = this.autocompleteItems.filter(item => {
+      /**
+       * _isTagUnique makes sure to remove items from the autocompelte dropdown if they have
+       * already been added to the model, and allowDuplicates is false
+       */
+      return (!searchTerm || item.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1) && this._isTagUnique(item);
+    });
   }
 
   /** Implemented as part of ControlValueAccessor. */
