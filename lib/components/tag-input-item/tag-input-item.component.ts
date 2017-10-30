@@ -2,12 +2,7 @@ import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/co
 
 @Component({
   selector: 'rl-tag-input-item',
-  template: `
-    {{text}}
-    <span
-    class="ng2-tag-input-remove"
-    (click)="removeTag()">&times;</span>
-  `,
+  template: `{{text}} <span class="ng2-tag-input-remove" (click)="removeTag()">&times;</span>`,
   styles: [`
     :host {
       font-family: "Roboto", "Helvetica Neue", sans-serif;
@@ -50,10 +45,20 @@ import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/co
 })
 export class TagInputItemComponent {
   @Input() selected: boolean;
-  @Input() text: string;
   @Input() index: number;
+  @Input() displayBy: string;
   @Output() tagRemoved: EventEmitter<number> = new EventEmitter<number>();
   @HostBinding('class.ng2-tag-input-item-selected') get isSelected() { return !!this.selected; }
+
+  private textToParse;
+
+  @Input()
+  set text(value) {
+    this.textToParse = typeof value === 'object' ? value[this.displayBy] : value;
+  }
+  get text() {
+    return this.textToParse;
+  }
 
   constructor() { }
 

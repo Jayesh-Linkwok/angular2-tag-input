@@ -7,12 +7,11 @@ import { KEYS } from '../../shared/tag-input-keys';
 @Component({
   selector: 'rl-tag-input-autocomplete',
   template: `
-    <div
-      *ngFor="let item of items; let itemIndex = index"
-      [ngClass]="{ 'is-selected': selectedItemIndex === itemIndex }"
-      (click)="selectItem(itemIndex)"
-      class="rl-autocomplete-item">
-      {{item}}
+    <div *ngFor="let item of itemsToParse; let itemIndex = index" 
+         [ngClass]="{ 'is-selected': selectedItemIndex === itemIndex }" 
+         (click)="selectItem(itemIndex)" 
+         class="rl-autocomplete-item">
+      {{item[displayBy]}}
     </div>
   `,
   styles: [`
@@ -40,14 +39,29 @@ import { KEYS } from '../../shared/tag-input-keys';
   `]
 })
 export class TagInputAutocompleteComponent implements OnChanges, OnDestroy, OnInit {
-  @Input() items: string[];
+  @Input() displayBy: string;
   @Input() selectFirstItem: boolean = false;
   @Output() itemSelected: EventEmitter<string> = new EventEmitter<string>();
   @Output() enterPressed: EventEmitter<any> = new EventEmitter<any>();
   public selectedItemIndex: number = null;
   private keySubscription: Subscription;
   private get itemsCount(): Number {
-    return this.items ? this.items.length : 0;
+    return this.itemsToParse ? this.itemsToParse.length : 0;
+  }
+
+  private itemsToParse: any[] = [];
+
+  @Input()
+  set items(items: any[]) {
+    this.itemsToParse = [];
+
+    items.forEach(item => {
+      if (typeof item === 'object') {
+        this.itemsToParse.push(item);
+      } else {
+        this.itemsToParse.push({[this.displayBy]: item});
+      }
+    });
   }
 
   constructor(private elementRef: ElementRef) { }
@@ -158,7 +172,7 @@ export class TagInputAutocompleteComponent implements OnChanges, OnDestroy, OnIn
   }
 
   selectItem(itemIndex?: number): void {
-    let itemToEmit = itemIndex ? this.items[itemIndex] : this.items[this.selectedItemIndex];
+    let itemToEmit = itemIndex ? this.itemsToParse[itemIndex] : this.itemsToParse[this.selectedItemIndex];
     if (itemToEmit) {
       this.itemSelected.emit(itemToEmit);
     }
