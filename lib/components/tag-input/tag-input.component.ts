@@ -244,9 +244,10 @@ export class TagInputComponent implements ControlValueAccessor, OnDestroy, OnIni
   showAutocomplete(): boolean {
     return (
       this.autocomplete &&
-      this.autocompleteItems &&
-      this.autocompleteItems.length > 0 &&
+      this.autocompleteResults &&
+      this.autocompleteResults.length > 0 &&
       this.canShowAutoComplete &&
+      this.isFocused &&
       this.inputValue.length >= this.minSearchTermLength
     );
   }
