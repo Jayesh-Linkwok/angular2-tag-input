@@ -5,5 +5,7 @@ export const KEYS = {
   enter: 13,
   esc: 27,
   space: 32,
-  upArrow: 38
+  upArrow: 38,
+  tab: 9,
+  backTab: 16,
 };
