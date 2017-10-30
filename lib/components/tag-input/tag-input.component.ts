@@ -164,6 +164,7 @@ export class TagInputComponent implements ControlValueAccessor, OnDestroy, OnIni
 
     this.tagInputSubscription = this.tagInputField.valueChanges
     .do(value => {
+      this.canShowAutoComplete = true;
       this._updateAutocompleteResultsList(value);
     })
     .subscribe();
@@ -203,6 +204,8 @@ export class TagInputComponent implements ControlValueAccessor, OnDestroy, OnIni
         }
         break;
 
+      case KEYS.tab:
+      case KEYS.backTab:
       case KEYS.esc:
         this.canShowAutoComplete = false;
         break;
@@ -219,6 +222,7 @@ export class TagInputComponent implements ControlValueAccessor, OnDestroy, OnIni
 
   onInputFocused(): void {
     this.isFocused = true;
+    this._updateAutocompleteResultsList(this.inputValue);
     setTimeout(() => this.canShowAutoComplete = true);
   }
 
@@ -247,7 +251,6 @@ export class TagInputComponent implements ControlValueAccessor, OnDestroy, OnIni
       this.autocompleteResults &&
       this.autocompleteResults.length > 0 &&
       this.canShowAutoComplete &&
-      this.isFocused &&
       this.inputValue.length >= this.minSearchTermLength
     );
   }
