@@ -44,12 +44,11 @@ export class TagInputAutocompleteComponent implements OnChanges, OnDestroy, OnIn
   @Output() itemSelected: EventEmitter<string> = new EventEmitter<string>();
   @Output() enterPressed: EventEmitter<any> = new EventEmitter<any>();
   public selectedItemIndex: number = null;
+  public itemsToParse: any[] = [];
   private keySubscription: Subscription;
   private get itemsCount(): Number {
     return this.itemsToParse ? this.itemsToParse.length : 0;
   }
-
-  private itemsToParse: any[] = [];
 
   @Input()
   set items(items: any[]) {
