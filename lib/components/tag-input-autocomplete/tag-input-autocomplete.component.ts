@@ -100,11 +100,11 @@ export class TagInputAutocompleteComponent implements OnChanges, OnDestroy, OnIn
   }
 
   ensureHighlightVisible() {
-    let container = this.elementRef.nativeElement.querySelector('.sk-select-results__container');
+    let container = this.elementRef.nativeElement;
     if (!container) {
       return;
     }
-    let choices = container.querySelectorAll('.sk-select-results__item');
+    let choices = container.querySelectorAll('.rl-autocomplete-item');
     if (choices.length < 1) {
       return;
     }
