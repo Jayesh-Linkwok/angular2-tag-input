@@ -48,6 +48,7 @@ export interface AutoCompleteItem {
         (paste)="onInputPaste($event)"
         (keydown)="onKeydown($event)"
         (blur)="onInputBlurred($event)"
+        (click)="onInputClicked()"
         (focus)="onInputFocused()">
 
       <div *ngIf="showAutocomplete()" class="rl-tag-input-autocomplete-container">
@@ -221,6 +222,12 @@ export class TagInputComponent implements ControlValueAccessor, OnDestroy, OnIni
   }
 
   onInputFocused(): void {
+    this.isFocused = true;
+    this._updateAutocompleteResultsList(this.inputValue);
+    setTimeout(() => this.canShowAutoComplete = true);
+  }
+
+  onInputClicked(): void {
     this.isFocused = true;
     this._updateAutocompleteResultsList(this.inputValue);
     setTimeout(() => this.canShowAutoComplete = true);
