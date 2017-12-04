@@ -115,8 +115,11 @@ export class TagInputComponent implements ControlValueAccessor, OnDestroy, OnIni
   @Input() allowedTagsPattern: RegExp = /.+/;
   @Input() autocomplete: boolean = false;
   @Input() autocompleteItems: any[] = [];
+  @Input() autocompleteItemsCallback: (term: string) => Promise<any> = null;
+  @Input() autocompleteDebounceTime: number = 0;
   @Input() autocompleteMustMatch: boolean = true;
   @Input() autocompleteSelectFirstItem: boolean = true;
+  @Input() autocompleteMaxItems: number = 10;
   @Input() minSearchTermLength: number = 1;
   @Input() pasteSplitPattern: string = ',';
   @Input() placeholder: string = 'Add a tag';
@@ -163,10 +166,26 @@ export class TagInputComponent implements ControlValueAccessor, OnDestroy, OnIni
 
     this.autocompleteResults = this.autocompleteItems;
 
-    this.tagInputSubscription = this.tagInputField.valueChanges
+    this.tagInputSubscription = this.tagInputField.valueChanges.debounceTime(this.autocompleteDebounceTime)
     .do(value => {
-      this.canShowAutoComplete = true;
-      this._updateAutocompleteResultsList(value);
+      if (!(value.length >= this.minSearchTermLength)) {
+        this.autocompleteResults = [];
+        return;
+      }
+
+      if (this.autocompleteItemsCallback) {
+        this.autocompleteItemsCallback(value).then((items: any) => {
+          this.autocompleteItems = items;
+
+          this.canShowAutoComplete = true;
+          this._updateAutocompleteResultsList(value);
+        }, () => {
+          // Nothing do right now
+        });
+      } else {
+        this.canShowAutoComplete = true;
+        this._updateAutocompleteResultsList(value);
+      }
     })
     .subscribe();
   }
@@ -340,15 +359,21 @@ export class TagInputComponent implements ControlValueAccessor, OnDestroy, OnIni
   }
 
   private _updateAutocompleteResultsList(searchTerm: string): void {
-    this.autocompleteResults = this.autocompleteItems.filter(item => {
+    let filteredItems = this.autocompleteItems.filter(item => {
       /**
        * _isTagUnique makes sure to remove items from the autocompelte dropdown if they have
        * already been added to the model, and allowDuplicates is false
        */
       let itemToCheck = this._prepareItem(item);
 
-      return (!searchTerm || itemToCheck.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1) && this._isTagUnique(item);
+      if (this.autocompleteItemsCallback) {
+        return this._isTagUnique(item);
+      } else {
+        return (!searchTerm || itemToCheck.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1) && this._isTagUnique(item);
+      }
     });
+
+    this.autocompleteResults = filteredItems.slice(0, this.autocompleteMaxItems);
   }
 
   /** Implemented as part of ControlValueAccessor. */
