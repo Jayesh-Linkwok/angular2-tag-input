@@ -199,21 +199,21 @@ export class TagInputComponent implements ControlValueAccessor, OnDestroy, OnIni
 
       case KEYS.enter:
         if (this.addOnEnter && !this.showAutocomplete()) {
-          this._addTags([this.inputValue]);
+          this.submitInputValue();
           event.preventDefault();
         }
         break;
 
       case KEYS.comma:
         if (this.addOnComma) {
-          this._addTags([this.inputValue]);
+          this.submitInputValue();
           event.preventDefault();
         }
         break;
 
       case KEYS.space:
         if (this.addOnSpace) {
-          this._addTags([this.inputValue]);
+          this.submitInputValue();
           event.preventDefault();
         }
         break;
@@ -236,7 +236,10 @@ export class TagInputComponent implements ControlValueAccessor, OnDestroy, OnIni
   }
 
   onInputBlurred(event): void {
-    if (this.addOnBlur) { this._addTags([this.inputValue]); }
+    if (this.addOnBlur) {
+      this.submitInputValue();
+    }
+
     this.isFocused = false;
   }
 
@@ -267,7 +270,7 @@ export class TagInputComponent implements ControlValueAccessor, OnDestroy, OnIni
 
   onAutocompleteEnter() {
     if (this.addOnEnter && this.showAutocomplete() && !this.autocompleteMustMatch) {
-      this._addTags([this.inputValue]);
+      this.submitInputValue();
     }
   }
 
@@ -279,6 +282,10 @@ export class TagInputComponent implements ControlValueAccessor, OnDestroy, OnIni
       this.canShowAutoComplete &&
       this.inputValue.length >= this.minSearchTermLength
     );
+  }
+
+  submitInputValue(): void {
+    this._addTags([this.inputValue]);
   }
 
   private _splitString(tagString: string): string[] {
