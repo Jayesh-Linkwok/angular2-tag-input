@@ -9,7 +9,8 @@
     "taginput",
     "tags",
     "chips",
-    "chips input"
+    "chips input",
+    "multiselect"
   ],
   "scripts": {
     "clean": "./node_modules/.bin/rimraf ./dist/",
