@@ -1,14 +1,7 @@
 # angular2-tag-input
 Tag input component for Angular 2
 
-## Demo & Examples
-[View Demo](http://www.webpackbin.com/EkDO0p3Ab)
-
 ## Quick Start
-```
-npm install angular2-tag-input --save
-```
-
 ```
 // In one of your application NgModules
 import {RlTagInputModule} from 'angular2-tag-input';
@@ -36,9 +29,13 @@ export class YourModule {}
 | `allowDuplicates` | `boolean` | `false` | Allow duplicate tags. |
 | `allowedTagsPattern` | `RegExp` | `/.+/` | RegExp that must match for a tag to be added. |
 | `autocomplete` | `boolean` | `false` | Toggle autocomplete mode on/off |
-| `autocompleteItems` | `string[]` | `[]` | List of suggestions for autocomplete menu |
+| `autocompleteDebounceTime` | `number` | `0` | Debounce time for autocomplete |
+| `autocompleteItems` | `string[]` | `[]` | List of suggestions for autocomplete menu if value for autocompleteItemsCallback isn't specified  |
+| `autocompleteItemsCallback` | `(term: string) => Promise<any>` | `null` | Callback for getting the suggestion list |
+| `autocompleteMaxItems` | `number` | `10` | The maximum number of items that appears in the suggestions list |
 | `autocompleteMustMatch` | `boolean` | `true` | Whether a tag must be present in the suggestions list to be valid |
 | `autocompleteSelectFirstItem` | `boolean` | `true` | Pre-highlight the first item in the suggestions list |
+| `minSearchTermLength` | `number` | `1` | Min search term length for autocomplete 
 | `placeholder` | `string` | `'Add a tag'` | Placeholder for the `<input>` tag. |
 
 
