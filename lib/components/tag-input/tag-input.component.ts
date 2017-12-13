@@ -256,6 +256,10 @@ export class TagInputComponent implements ControlValueAccessor, OnDestroy, OnIni
   }
 
   onInputPaste(event): void {
+    if (!this.addOnPaste) {
+      return;
+    }
+
     let clipboardData = event.clipboardData || (event.originalEvent && event.originalEvent.clipboardData);
 
     if (!clipboardData) {
