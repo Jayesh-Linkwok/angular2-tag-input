@@ -1,10 +1,10 @@
-# angular2-tag-input
+# angular2-tag-autocomplete-async
 Tag input component for Angular 2
 
 ## Quick Start
 ```
 // In one of your application NgModules
-import {RlTagInputModule} from 'angular2-tag-input';
+import {RlTagInputModule} from 'angular2-tag-autocomplete-async';
 
 @NgModule({
   imports: [
